@@ -1,0 +1,74 @@
+public class MySender {
+
+public static void main(String[] args) throws JMSException
+
+
+Try{
+ctx=New InitialContext();
+TopicConnection con=f.createTopicConnection();
+con.start();
+TopicSession sess=con.createTopicSession(false,Session.AUTO_ACKNOWLEDGE)
+Topic t=(Topic)ctx.lookupLink("jms/MyTopic");
+TopicSender sender=sess.createSender(t);
+TextMessage messj=sess.createTextMessage();
+BufferedReader b=new BufferedReader(new InputStreamReader(System.in));
+while(true){
+System.out.println("enter message or type end TO Terminate");
+String s=b.readLine();
+if(s.equalsIgnoreCase("end")){
+break;
+}
+else {
+messj.setText(s);
+sender.send(messj);
+System.out.println("message sent succesfull");
+}
+}
+con.close();
+}
+catch(NamingException e) {
+e.printStackTrace();
+}
+}
+}
+
+MyReciever.java
+
+import javax.naming.*;
+public class MyReceiver {
+
+public static void main(String[] args) throws JMSException
+
+try{
+InitialContext ctx=new InitialContext();
+TopicConnectionFactory f=(TopicConnectionFactory)
+TopicConnection con=f.createTopicConnection();
+con.start();
+TopicSession sess=con.createTopicSession(false,
+Topic t=(Topic) ctx.lookup("jms/MyTopic");
+TopicReciever r =sess.createReciever(t);
+MyListener listener=new MyListener();
+r.setMessageListener(listener);
+System.out.println("Reciever is waiting for messages");
+}
+catch(NamingException e) {
+e.printStackTrace();
+}
+}
+
+
+MyListener.java
+
+import javax.jms.JMSException;
+public class MyListener implements MessageListener{
+@Overide
+public void OnMessage(Message m){
+TextMessage msg=(TextMessage) m;
+try {
+System.out.println("Following message recieved"+msg.getText());
+} catch(JMSException e) {
+e.printStackTrace();
+}
+}
+
+
